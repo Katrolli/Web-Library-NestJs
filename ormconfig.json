@@ -1,0 +1,12 @@
+{
+  "type": "postgres",
+  "host": "localhost",
+  "port": 5432,
+  "username": "user",
+  "password": "root",
+  "database": "libray_db",
+  "synchronize": true,
+  "entities": ["src/users/entities/user.entity.ts"],
+  "seeds": ["src/**/*Seeder.ts"],
+  "factories": ["src/users/**/*Factory.ts"]
+}
