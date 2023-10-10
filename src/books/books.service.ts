@@ -18,9 +18,6 @@ export class BooksService {
 
   async create(user, book: BookInterface): Promise<Book> {
     try {
-      // const author = await this.userRepository.findOne({
-      //   where: { id: userId },
-      // });
       const category = await this.categoryRepository.findOne({
         where: { name: book.category },
       });
@@ -32,7 +29,12 @@ export class BooksService {
         category: category,
       });
 
-      return newBook;
+      const bookWithRelation = await this.bookRepository.findOne({
+        where: { id: newBook.id },
+        relations: { category: true, author: true },
+      });
+
+      return bookWithRelation;
     } catch (err) {
       console.log(err);
       throw 'Failed to create book with err ' + err.message;
