@@ -16,7 +16,7 @@ export class BooksService {
     private categoryRepository: Repository<Category>,
   ) {}
 
-  async create(user, book: BookInterface): Promise<Book> {
+  async create(user, book: Partial<BookInterface>): Promise<Book> {
     try {
       const category = await this.categoryRepository.findOne({
         where: { name: book.category },
@@ -63,20 +63,29 @@ export class BooksService {
     }
   }
 
-  async update(id: string, payload: Partial<BookInterface>): Promise<Book> {
+  async update(
+    id: string,
+    payload: Partial<BookInterface> & Partial<{ authorId: string }>,
+  ): Promise<Book> {
+    const author = payload.authorId;
     try {
-      const book = await this.bookRepository.findOne({
+      let book = await this.bookRepository.findOne({
         where: { id },
         relations: { category: true, author: true },
       });
       const newCategory = await this.categoryRepository.findOne({
         where: { name: payload.category },
       });
+
+      const newAuthor = await this.userRepository.findOne({
+        where: { name: author },
+      });
+
+      book = { ...book, ...payload, author: newAuthor, category: newCategory };
       const updatedBook = await this.bookRepository.save({
         ...book,
-        ...payload,
-        category: newCategory,
       });
+
       delete updatedBook.author.password;
       return updatedBook;
     } catch (err) {
