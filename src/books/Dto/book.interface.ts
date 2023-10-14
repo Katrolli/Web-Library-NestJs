@@ -9,8 +9,6 @@ export class BookInterface {
   @IsString()
   description: string;
 
-  @IsDefined()
-  @IsString()
   imageUrl: string;
 
   @IsDefined()

@@ -2,7 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-
+import { join } from 'path';
+import * as express from 'express';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
@@ -17,6 +18,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ stopAtFirstError: true }));
   app.enableCors();
+  app.use(express.static(join(__dirname, '..', 'src', 'books', 'images')));
 
   await app.listen(3000);
 }
