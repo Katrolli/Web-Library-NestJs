@@ -62,7 +62,6 @@ export class BooksController {
     }
   }
 
-  @UseGuards(AuthGuard)
   @Get()
   async findAll() {
     try {
@@ -72,20 +71,38 @@ export class BooksController {
     }
   }
 
-  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.booksService.findOne(id);
   }
 
-  // @UseGuards(AuthGuard)
+  @UseInterceptors(
+    FileInterceptor('imageUrl', {
+      storage: diskStorage({
+        destination: './src/books/images',
+        filename: (req, file, cb) => {
+          try {
+            cb(null, `${file.originalname}`);
+          } catch (err) {
+            console.error('File saving error', err);
+            cb(err, null);
+          }
+        },
+      }),
+    }),
+  )
   @Patch(':id')
   @ApiBody({ type: BookInterface })
-  update(@Param('id') id: string, @Body() payload: Partial<BookInterface>) {
+  update(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('id') id: string,
+    @Body() payload: Partial<BookInterface>,
+  ) {
+    const imageUrl = `${file.filename}`;
+    payload.imageUrl = imageUrl;
     return this.booksService.update(id, payload);
   }
 
-  @UseGuards(AuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     try {
