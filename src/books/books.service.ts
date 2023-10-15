@@ -66,9 +66,9 @@ export class BooksService {
 
   async update(
     id: string,
-    payload: Partial<BookInterface> & Partial<{ authorId: string }>,
+    payload: Partial<BookInterface> & Partial<{ author: string }>,
   ): Promise<Book> {
-    const author = payload.authorId;
+    const author = payload.author;
     try {
       let book = await this.bookRepository.findOne({
         where: { id },
@@ -77,6 +77,7 @@ export class BooksService {
       if (!book) {
         throw new Error('Book not found');
       }
+      // deleteImage(book.imageUrl);
       const newCategory = await this.categoryRepository.findOne({
         where: { name: payload.category },
       });
@@ -84,7 +85,6 @@ export class BooksService {
       if (!newCategory) {
         throw new Error('Category not found');
       }
-
       const newAuthor = await this.userRepository.findOne({
         where: { name: author },
       });
@@ -93,6 +93,7 @@ export class BooksService {
       }
 
       book = { ...book, ...payload, author: newAuthor, category: newCategory };
+
       const updatedBook = await this.bookRepository.save({
         ...book,
       });

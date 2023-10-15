@@ -98,8 +98,10 @@ export class BooksController {
     @Param('id') id: string,
     @Body() payload: Partial<BookInterface>,
   ) {
-    const imageUrl = `${file.filename}`;
-    payload.imageUrl = imageUrl;
+    if (file) {
+      const imageUrl = `${file.filename}`;
+      payload.imageUrl = imageUrl;
+    }
     return this.booksService.update(id, payload);
   }
 
