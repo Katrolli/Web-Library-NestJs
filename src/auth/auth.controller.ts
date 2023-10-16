@@ -4,10 +4,11 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthInterface } from './auth.interface';
+import { AuthInterface, UpdateUser } from './auth.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -16,12 +17,15 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async signIn(@Body() signInForm: AuthInterface) {
+    return await this.authService.signIn(signInForm.email, signInForm.password);
+  }
+
+  @Post('update/:id')
+  async updateUser(@Param('id') id: string, @Body() payload: UpdateUser) {
     try {
-      return await this.authService.signIn(
-        signInForm.email,
-        signInForm.password,
-      );
+      return await this.authService.updateUser(id, payload);
     } catch (err) {
+      console.log(err);
       throw new BadRequestException(err);
     }
   }

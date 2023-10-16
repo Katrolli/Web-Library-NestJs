@@ -18,6 +18,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { ApiBody } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { AdminGuard } from 'src/auth/admin.guard';
 
 @UseGuards(AuthGuard)
 @Controller('books')
@@ -76,6 +77,7 @@ export class BooksController {
     return this.booksService.findOne(id);
   }
 
+  @UseGuards(AdminGuard)
   @UseInterceptors(
     FileInterceptor('imageUrl', {
       storage: diskStorage({
@@ -99,7 +101,7 @@ export class BooksController {
     @Body() payload: Partial<BookInterface>,
   ) {
     if (file) {
-      const imageUrl = `${file.filename}`;
+      const imageUrl = file.filename;
       payload.imageUrl = imageUrl;
     }
     return this.booksService.update(id, payload);
